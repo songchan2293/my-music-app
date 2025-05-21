@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title><%= album.title %> - 앨범 정보</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #121212; color: white; }
+    .container { padding: 2rem; }
+    .card { background-color: #1e1e1e; border: none; }
+    .table th, .table td { color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="text-end">
+      <a href="/" class="btn btn-outline-light mb-4">🏠 홈으로</a>
+    </div>
+    <h1 class="mb-3"><%= album.title %></h1>
+    <p><strong>발매일:</strong> <%= album.release_date %></p>
+    <p><strong>좋아요 ♥:</strong> <%= album.liked_num.toLocaleString() %></p>
+
+    <h3 class="mt-4">🎵 수록곡</h3>
+    <table class="table table-dark table-striped mt-3">
+      <thead>
+        <tr>
+          <th>제목</th>
+          <th>곡 길이</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% songs.forEach(song => { %>
+          <tr>
+            <td><%= song.title %></td>
+            <td>
+              <% const min = Math.floor(song.song_length / 60); const sec = (song.song_length % 60); %>
+              <%= min.toString().padStart(2, '0') %>:<%= sec.toString().padStart(2, '0') %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
