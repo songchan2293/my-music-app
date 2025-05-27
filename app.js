@@ -425,6 +425,9 @@ app.get('/playlist/:id', async (req, res) => {
   });
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
 
 const PORT = process.env.PORT || 3000; // env의 PORT 사용 아니면 3000 Port
 app.listen(PORT, () => {
