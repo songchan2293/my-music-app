@@ -379,10 +379,44 @@ JOIN Album A on S.album_ID = A.ID
 WHERE A.artist_ID = 'ART_3'
 FETCH FIRST 10 ROWS ONLY;
 
+-- 7. 유저
+INSERT INTO "USER" (ID, name, email, register_date, user_type) VALUES
+('USER_1', 'UiamLife', 'songchan2293@naver.com', TO_DATE('2025-05-27', 'YYYY-MM-DD'), 'admin');
+INSERT INTO "USER" (ID, name, email, register_date, user_type) VALUES
+('USER_2', 'exampleUser', 'songchan2293@gmail.com', TO_DATE('2025-05-28', 'YYYY-MM-DD'), 'user');
+
+-- 8. 플레이리스트
+INSERT INTO Playlist (ID, title, description, create_date, USER_ID) VALUES
+('PLAYLIST_1', '외국힙합 플레이리스트', '개인적인 감성으로 만든 플레이리스트입니다.', TO_DATE('2025-05-27', 'YYYY-MM-DD'), 'USER_1');
+
+-- 9. 플레이리스트의 곡
+INSERT INTO Playlist_Song (playlist_ID, song_ID, order_num) VALUES
+('PLAYLIST_1', 'S_D2', 1);
+INSERT INTO Playlist_Song (playlist_ID, song_ID, order_num) VALUES
+('PLAYLIST_1', 'S_D4', 2);
+INSERT INTO Playlist_Song (playlist_ID, song_ID, order_num) VALUES
+('PLAYLIST_1', 'S_D8', 3);
+INSERT INTO Playlist_Song (playlist_ID, song_ID, order_num) VALUES
+('PLAYLIST_1', 'S_D14', 4);
+INSERT INTO Playlist_Song (playlist_ID, song_ID, order_num) VALUES
+('PLAYLIST_1', 'S_Y2', 5);
+INSERT INTO Playlist_Song (playlist_ID, song_ID, order_num) VALUES
+('PLAYLIST_1', 'S_Y10', 6);
+INSERT INTO Playlist_Song (playlist_ID, song_ID, order_num) VALUES
+('PLAYLIST_1', 'S_Y11', 7);
+INSERT INTO Playlist_Song (playlist_ID, song_ID, order_num) VALUES
+('PLAYLIST_1', 'S_Y13', 8);
+INSERT INTO Playlist_Song (playlist_ID, song_ID, order_num) VALUES
+('PLAYLIST_1', 'S_Y15', 9);
+INSERT INTO Playlist_Song (playlist_ID, song_ID, order_num) VALUES
+('PLAYLIST_1', 'S_Y16', 10);
+INSERT INTO Playlist_Song (playlist_ID, song_ID, order_num) VALUES
+('PLAYLIST_1', 'S_Y18', 11);
+
 -- cf) 곡 좋아요 수 업데이트
-UPDATE Artist_Song
-SET artist_ID = 'ART_5'
-WHERE song_ID = 'S_Ch3';
+UPDATE Album
+SET liked_num = 1800000
+WHERE ID = 'ALB_5';
 
 DELETE FROM Song
 WHERE id = 'S_Ch3';

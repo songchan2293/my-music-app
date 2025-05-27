@@ -60,12 +60,22 @@ app.get('/', async (req, res) => { //홈페이지로 접속하면 실행될 코�
         SELECT ID, title, create_date FROM Chart ORDER BY create_date DESC
       `;
 
-      const [albumResult, artistResult, topSongsResult, chartResult] = await Promise.all([
+      // 5. 추천 플레이리스트
+      const playlistQuery = `
+        SELECT ID, title, description
+        FROM Playlist
+        ORDER BY create_date DESC
+      `;
+
+      // Promise.all
+      const [albumResult, artistResult, topSongsResult, chartResult, playlistResult] = await Promise.all([
         conn.execute(albumQuery, albumBinds),
         conn.execute(artistQuery, artistBinds),
         conn.execute(songQuery, songBinds),
-        conn.execute(chartQuery)
+        conn.execute(chartQuery),
+        conn.execute(playlistQuery)
       ]);
+
 
     await conn.close(); // 연결 닫기
     res.render('home', {
@@ -80,6 +90,11 @@ app.get('/', async (req, res) => { //홈페이지로 접속하면 실행될 코�
         id: row[0],
         title: row[1],
         date: row[2]
+      })),
+      playlists: playlistResult.rows.map(row =>({
+        id: row[0],
+        title: row[1],
+        description: row[2]
       })),
       albumSort, albumMinLikes,
       artistSort, artistMinSubs,
@@ -105,7 +120,7 @@ app.get('/test-db', async (req, res) => {
 // album 라우트
 app.get('/album/:id', async (req, res) => {
   const albumId = req.params.id;
-  const sort = req.query.sort;
+  const { sort, albumMinLikes } = req.query;
 
   const conn = await getConnection();
 
@@ -113,17 +128,28 @@ app.get('/album/:id', async (req, res) => {
   const albumQuery = `SELECT title, release_date, liked_num FROM Album WHERE ID = :id`;
   const albumResult = await conn.execute(albumQuery, [albumId]);
 
-  // 곡 정렬 조건에 따라 SQL 구성
-  let songQuery = `SELECT ID, title, song_length, liked_num FROM Song WHERE album_ID = :id`;
-  if (sort === 'liked_desc') { // 내림차순
-    songQuery += ' ORDER BY liked_num DESC';
-  } else if (sort === 'liked_asc') { // 오름차순
-    songQuery += ' ORDER BY liked_num ASC';
-  } else { // 정렬 없음
-    songQuery += ' ORDER BY ID ASC';
+  // 곡 필터 조건 조립
+  let songQuery = `
+    SELECT ID, title, song_length, liked_num
+    FROM Song
+    WHERE album_ID = :id
+  `;
+  const binds = [albumId];
+
+  if (albumMinLikes) {
+    songQuery += ` AND liked_num >= :minLikes`;
+    binds.push(Number(albumMinLikes));
   }
 
-  const songsResult = await conn.execute(songQuery, [albumId]);
+  if (sort === 'liked_desc') {
+    songQuery += ' ORDER BY liked_num DESC';
+  } else if (sort === 'liked_asc') {
+    songQuery += ' ORDER BY liked_num ASC';
+  } else {
+    songQuery += ' ORDER BY ID ASC'; // 기본값: 등록순
+  }
+
+  const songsResult = await conn.execute(songQuery, binds);
 
   await conn.close();
 
@@ -140,7 +166,8 @@ app.get('/album/:id', async (req, res) => {
       song_length: row[2],
       likes: row[3]
     })),
-    sort: sort || '' // 정렬 조건을 view에도 넘겨주기
+    sort: sort || '',
+    albumMinLikes: albumMinLikes || ''
   });
 });
 
@@ -340,6 +367,61 @@ app.get('/chart/:id', async (req, res) => {
     })),
     minLikes: minLikes || '',
     maxRank: maxRank || ''
+  });
+});
+
+// playlist 라우트
+app.get('/playlist/:id', async (req, res) => {
+  const playlistId = req.params.id;
+  const { maxOrder } = req.query;
+
+  const conn = await getConnection();
+
+  const playlistResult = await conn.execute(`
+    SELECT P.title, P.description, P.create_date, U.name
+    FROM Playlist P
+    JOIN "USER" U ON P.user_ID = U.ID
+    WHERE P.ID = :id
+  `, [playlistId]);
+
+  let songQuery = `
+    SELECT S.ID, S.title, A.name, AL.title, S.liked_num, PS.order_num
+    FROM Playlist_Song PS
+    JOIN Song S ON PS.song_ID = S.ID
+    JOIN Album AL ON S.album_ID = AL.ID
+    JOIN Artist_Song ASG ON S.ID = ASG.song_ID
+    JOIN Artist A ON ASG.artist_ID = A.ID
+    WHERE PS.playlist_ID = :id
+  `;
+  const binds = [playlistId];
+
+  if (maxOrder) {
+    songQuery += ` AND PS.order_num <= :maxOrder`;
+    binds.push(parseInt(maxOrder));
+  }
+
+  songQuery += ' ORDER BY PS.order_num';
+
+  const songsResult = await conn.execute(songQuery, binds);
+  await conn.close();
+
+  res.render('playlist', {
+    playlist: {
+      id: playlistId,
+      title: playlistResult.rows[0][0],
+      description: playlistResult.rows[0][1],
+      create_date: playlistResult.rows[0][2],
+      creator_name: playlistResult.rows[0][3]
+    },
+    songs: songsResult.rows.map(row => ({
+      id: row[0],
+      title: row[1],
+      artist: row[2],
+      album: row[3],
+      liked_num: row[4],
+      order_num: row[5]
+    })),
+    maxOrder: maxOrder || ''
   });
 });
 

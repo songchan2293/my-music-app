@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title><%= playlist.title %> - 플레이리스트</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #121212; color: white; }
+    .container { padding: 2rem; }
+    .table th, .table td { vertical-align: middle; }
+    .table-primary td, .table-primary th { background-color: #2b3e50 !important; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="text-end">
+      <a href="/" class="btn btn-outline-light mb-4">🏠 홈으로</a>
+    </div>
+    <h1 class="mb-3"><%= playlist.title %></h1>
+    <p>👤 만든 사람: <%= playlist.creator_name %></p>
+    <p>📝 설명: <%= playlist.description %></p>
+    <p>📅 생성일: <%= playlist.create_date.toISOString().slice(0, 10) %></p>
+
+    <% if (songs.length === 0) { %>
+      <p>해당 플레이리스트에 등록된 곡이 없습니다.</p>
+    <% } else { %>
+      <table class="table table-dark table-striped mt-4">
+        <thead>
+          <tr>
+            <th>순서</th>
+            <th>제목</th>
+            <th>아티스트</th>
+            <th>앨범</th>
+            <th>좋아요 ♥</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% songs.forEach(song => { %>
+            <tr>
+              <td><%= song.order_num %></td>
+              <td><a href="/song/<%= song.id %>" class="text-white text-decoration-none"><%= song.title %></a></td>
+              <td><%= song.artist %></td>
+              <td><%= song.album %></td>
+              <td><%= song.liked_num.toLocaleString() %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+    <hr>
+    <!-- 🔍 필터 버튼 -->
+    <div class="text-end mb-3">
+      <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#filterModal">🎛️ 필터</button>
+    </div>
+  </div>
+
+
+  <!-- 🔍 필터 모달 -->
+  <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form action="/playlist/<%= playlist.id %>" method="GET" class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="filterModalLabel">곡 순서 필터</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label">최대 순서</label>
+          <input type="number" name="maxOrder" class="form-control" value="<%= maxOrder %>" placeholder="예: 10">
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-light">적용</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

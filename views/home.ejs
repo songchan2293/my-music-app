@@ -68,6 +68,21 @@
       <% }) %>
     </ul>
     <hr>
+    <h2 class="text-white mt-5">🎶 추천 플레이리스트</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <% playlists.forEach(pl => { %>
+        <div class="col">
+          <div class="card h-100 shadow">
+            <div class="card-body">
+              <h5 class="card-title"><%= pl.title %></h5>
+              <p class="card-text"><%= pl.description %></p>
+              <a href="/playlist/<%= pl.id %>" class="btn btn-outline-light btn-sm">보러 가기</a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+    <hr>
     <!-- 홈 필터 모달 버튼 -->
     <div class="text-end mb-3">
       <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#homeFilterModal">
