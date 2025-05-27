@@ -2,7 +2,7 @@ User (ID, name, email, register_date, user_type)
 Album (ID, title, release_date, liked_num, artist_ID(FK))
 Artist (ID, name, birth_date, nation, subscribed_num)
 Chart (ID, title, week_or_month, create_date)
-Genre (ID, genre_name)
+Genre (ID, name)
 Playlist (ID, title, description, create_date, user_ID(FK)
 Song (ID, title, song_length, liked_num, album_ID(FK), genre_ID(FK))
 

@@ -30,7 +30,7 @@
       <% }) %>
     </div>
     <hr>
-    <h2 class="mb-4 text-white">✨추천 아티스트</h2>
+    <h2 class="mb-4 text-white">✨ 추천 아티스트</h2>
     <div class="row row-cols-1 row-cols-md-4 g-4">
       <% artists.forEach(artist => { %>
         <div class="col">
@@ -56,7 +56,65 @@
         </li>
       <% }) %>
     </ul>
+    <hr>
+    <h2 class="text-white mt-5">📈 최신 차트</h2>
+    <ul class="list-group list-group-flush">
+      <% charts.forEach(chart => { %>
+        <li class="list-group-item bg-dark text-white">
+          <a href="/chart/<%= chart.id %>" class="text-white text-decoration-none">
+            <%= chart.title %>
+          </a>
+        </li>
+      <% }) %>
+    </ul>
+    <hr>
+    <!-- 홈 필터 모달 버튼 -->
+    <div class="text-end mb-3">
+      <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#homeFilterModal">
+        🎛️ 홈 필터
+      </button>
+    </div>
+    <!-- 홈 필터 모달 -->
+    <div class="modal fade" id="homeFilterModal" tabindex="-1" aria-labelledby="homeFilterLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <form action="/" method="GET" class="modal-content bg-dark text-white">
+          <div class="modal-header">
+            <h5 class="modal-title">홈 필터</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <h6>추천 앨범</h6>
+            <select name="albumSort" class="form-select mb-2">
+              <option value="">정렬 없음</option>
+              <option value="liked_desc">좋아요 높은 순</option>
+              <option value="liked_asc">좋아요 낮은 순</option>
+            </select>
+            <input type="number" name="albumMinLikes" class="form-control mb-3" placeholder="좋아요 수 이상">
 
+            <h6>추천 아티스트</h6>
+            <select name="artistSort" class="form-select mb-2">
+              <option value="">정렬 없음</option>
+              <option value="subs_desc">구독자 많은 순</option>
+              <option value="subs_asc">구독자 적은 순</option>
+            </select>
+            <input type="number" name="artistMinSubs" class="form-control mb-3" placeholder="구독자 수 이상">
+
+            <h6>인기 노래</h6>
+            <select name="songSort" class="form-select mb-2">
+              <option value="">정렬 없음</option>
+              <option value="song_desc">좋아요 높은 순</option>
+              <option value="song_asc">좋아요 낮은 순</option>
+            </select>
+            <input type="number" name="songMinLikes" class="form-control" placeholder="좋아요 수 이상">
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-light">적용</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

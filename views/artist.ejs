@@ -14,6 +14,7 @@
     <div class="text-end">
       <a href="/" class="btn btn-outline-light mb-4">🏠 홈으로</a>
     </div>
+    <img src="/photo/<%= artistId %>.jpg" class="img-fluid mb-3 rounded" alt="아티스트 이미지">
     <h1><%= artist.name %></h1>
     <p><strong>국적:</strong> <%= artist.nation %></p>
     <p><strong>생년월일:</strong>
@@ -25,29 +26,159 @@
 
     </p>
     <p><strong>구독자 수:</strong> <%= artist.subscribed_num.toLocaleString() %>명</p>
-
+    <hr>
     <h3 class="mt-4">🎵 참여 곡</h3>
     <table class="table table-dark table-striped mt-3">
       <thead>
         <tr>
           <th>제목</th>
           <th>역할</th>
-          <th>곡 길이</th>
+          <th>재생 시간</th>
+          <th>좋아요 ♥</th>
         </tr>
       </thead>
       <tbody>
         <% songs.forEach(song => { %>
           <tr>
-            <td><%= song.title %></td>
+            <td>
+              <a href = "/song/<%= song.id %>" class="text-decoration-none text-white">
+                <%= song.title %>
+              </a>
+              </td>
             <td><%= song.role %></td>
             <td>
               <% const min = Math.floor(song.song_length / 60); const sec = song.song_length % 60; %>
               <%= min.toString().padStart(2, '0') %>:<%= sec.toString().padStart(2, '0') %>
             </td>
+            <td><%= song.liked_num.toLocaleString() %></td>
           </tr>
         <% }) %>
       </tbody>
     </table>
+    <hr>
+    <!-- 모달 열기 버튼 -->
+    <div class="text-end mb-3">
+      <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#songfilterModal">
+        🎛️ 곡 필터
+      </button>
+    </div>
+
+    <h3 class="mt-4">💿 앨범</h3>
+    <table class="table table-dark table-striped mt-3">
+      <thead>
+        <tr>
+          <th>앨범명</th>
+          <th>발매일</th>
+          <th>좋아요 ♥</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% albums.forEach(album => { %>
+          <tr>
+            <td>
+              <a href="/album/<%= album.id %>" class="text-decoration-none text-white">
+                <%= album.title %>
+              </a>
+            </td>
+            <td><%= album.release_date.toISOString().slice(0, 10) %></td>
+            <td><%= album.liked_num.toLocaleString() %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <hr>
+    <!-- 필터 버튼 -->
+    <div class="text-end mb-3">
+      <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#albumFilterModal">
+        🎛️ 앨범 필터
+      </button>
+    </div>
   </div>
+
+
+  <!-- 곡 필터 모달 -->
+  <div class="modal fade" id="songfilterModal" tabindex="-1" aria-labelledby="SongfilterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form action="/artist/<%= artistId %>" method="GET" class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="filterModalLabel">참여 곡 필터</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- 정렬 -->
+          <div class="mb-3">
+            <label class="form-label">정렬 기준</label>
+            <select name="sort" class="form-select">
+              <option value="">정렬 없음</option>
+              <option value="liked_desc" <%= sort === 'liked_desc' ? 'selected' : '' %>>좋아요 높은 순</option>
+              <option value="liked_asc" <%= sort === 'liked_asc' ? 'selected' : '' %>>좋아요 낮은 순</option>
+            </select>
+          </div>
+
+          <!-- 좋아요 수 -->
+          <div class="mb-3">
+            <label class="form-label">좋아요 수 이상</label>
+            <input type="number" name="minLikes" class="form-control" placeholder="예: 1000"
+                   value="<%= minLikes %>">
+          </div>
+
+          <!-- 참여 역할 -->
+          <div class="mb-3">
+            <label class="form-label">참여 역할</label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="role" value="" id="roleAll" <%= !role ? 'checked' : '' %>>
+              <label class="form-check-label" for="roleAll">전체</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="role" value="Main" id="roleMain" <%= role === 'Main' ? 'checked' : '' %>>
+              <label class="form-check-label" for="roleMain">Main만</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="role" value="Featuring" id="roleFeat" <%= role === 'Featuring' ? 'checked' : '' %>>
+              <label class="form-check-label" for="roleFeat">Featuring만</label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-light">적용</button>
+          <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">닫기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- 앨범 필터 모달 -->
+  <div class="modal fade" id="albumFilterModal" tabindex="-1" aria-labelledby="albumFilterLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form action="/artist/<%= artistId %>" method="GET" class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="albumFilterLabel">앨범 필터</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <!-- 좋아요 정렬 -->
+          <div class="mb-3">
+            <label class="form-label">좋아요 정렬</label>
+            <select name="albumSort" class="form-select">
+              <option value="">정렬 없음</option>
+              <option value="liked_desc" <%= albumSort === 'liked_desc' ? 'selected' : '' %>>좋아요 높은 순</option>
+              <option value="liked_asc" <%= albumSort === 'liked_asc' ? 'selected' : '' %>>좋아요 낮은 순</option>
+            </select>
+          </div>
+
+          <!-- 발매 연도 -->
+          <div class="mb-3">
+            <label class="form-label">발매 연도</label>
+            <input type="text" name="albumYear" class="form-control" placeholder="예: 2016" value="<%= albumYear %>">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-light">적용</button>
+          <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">닫기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

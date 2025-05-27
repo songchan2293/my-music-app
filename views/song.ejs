@@ -14,11 +14,11 @@
     <div class="text-end">
       <a href="/" class="btn btn-outline-light mb-4">🏠 홈으로</a>
     </div>
-    
+    <img src="/photo/<%= albumId %>.jpg" class="img-fluid mb-3 rounded" alt="앨범 이미지">
     <h1><%= song.title %></h1>
     <p><strong>아티스트:</strong> <%= artistName %></p>
     <p><strong>앨범:</strong> <%= albumTitle %></p>
-    <p><strong>길이:</strong>
+    <p><strong>재생시간:</strong>
       <% const min = Math.floor(song.length / 60); const sec = song.length % 60; %>
       <%= min.toString().padStart(2, '0') %>:<%= sec.toString().padStart(2, '0') %>
     </p>
