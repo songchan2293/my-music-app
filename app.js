@@ -60,7 +60,7 @@ app.get('/', async (req, res) => { //홈페이지로 접속하면 실행될 코�
         SELECT ID, title, create_date FROM Chart ORDER BY create_date DESC
       `;
 
-      // 5. 추천 플레이리스트
+      // 5. 플레이리스트
       const playlistQuery = `
         SELECT ID, title, description
         FROM Playlist
@@ -425,9 +425,6 @@ app.get('/playlist/:id', async (req, res) => {
   });
 });
 
-app.get('/health', (req, res) => {
-  res.status(200).send('OK');
-});
 
 const PORT = process.env.PORT || 3000; // env의 PORT 사용 아니면 3000 Port
 app.listen(PORT, () => {
