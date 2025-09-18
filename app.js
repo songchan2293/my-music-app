@@ -265,7 +265,7 @@ app.get('/artist/:id', async (req, res) => {
     albumYear: albumYear || ''
   });
 });
-
+// ss
 //song 라우트
 app.get('/song/:id', async (req, res) => {
   const songId = req.params.id;
